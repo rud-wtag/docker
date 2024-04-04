@@ -1,11 +1,9 @@
 # Table of Contents
 1. [Why docker](#why-docker)
-2. [Introduction to Docker](#introduction-to-docker)
-3. [Docker Basics](#docker-basics)
    - Containers vs. Virtual Machines
-   - Docker Engine
-   - Docker CLI Basics
-4. [Docker Images](#docker-images)
+2. [Introduction to Docker](#introduction-to-docker)
+
+3. [Docker Images](#docker-images)
    - Docker Hub
    - Pulling Images
    - Building Images
@@ -13,53 +11,42 @@
       - Syntax
       - Instructions
       - Best Practices
-5. [Docker Containers](#docker-containers)
+4. [Docker Containers](#docker-containers)
    - Running Containers
    - Managing Containers
    - Lifecycle of Containers
    - Executing Commands in Containers
-6. [Docker Networking](#docker-networking)
+5. [Docker Networking](#docker-networking)
    - Default Networking
    - Docker Networks
    - Bridge Networking
    - Host Networking
    - Overlay Networking
-7. [Docker Volumes](#docker-volumes)
+6. [Docker Volumes](#docker-volumes)
    - Volume Types
    - Persistent Data
    - Managing Volumes
    - Sharing Data Between Containers
-8. [Docker Compose](#docker-compose)
-   - Introduction
-   - YAML Syntax
+7. [Docker Compose](#docker-compose)
    - Defining Services
    - Managing Multi-Container Applications
    - Environment Variables
    - Networking in Docker Compose
    - Volumes in Docker Compose
    - Scaling Services
-9. [Docker Security](#docker-security)
-    - Best Practices
-    - Image Scanning
-    - Access Control
-    - Secrets Management
-10. [Docker Tips and Tricks](#docker-tips-and-tricks)
-    - Container Orchestration
-    - Health Checks
-    - Debugging Containers
-    - Docker Registry
-    - Container Lifecycle Hooks
 11. [Conclusion](#conclusion)
     - Recap of Key Concepts
     - Next Steps
 
 
 # Why docker?
-**Definition**: Docker is a software platform that allows you to build, test, and deploy applications quickly. Which solved "Not working on my machine" problem.
+**Definition**: Docker is a software platform that allows us to build, test, and deploy applications quickly.
 
 ### Virtualization vs Containerization
+!['image file'](arch.webp)
+
 Let's talk about some core concept of virtualization and containerization: 
-well all know about the virtual machine which are virtually created machine inside our physical machine. Some characteristics of virtual machine are
+well all know about the **virtual machine** which is the virtualization or emulation of a computer system. Some characteristics of a virtual machines are:- 
 
 - VMs emulate a physical computer and run an entire operating system (OS) stack.
 - Each VM includes its own kernel, libraries, applications, and binaries.
@@ -67,11 +54,12 @@ well all know about the virtual machine which are virtually created machine insi
 - VMs typically consume more resources due to the duplication of OS components.
 - Startup time for VMs is relatively slower compared to containers.
 
-Now container become handy in this regards:
+A **container** is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another.
+
+Some characteristics of a containers are:- 
 
 - Containers provide a lightweight and portable way to encapsulate application dependencies.
 - Containers share the host OS kernel and only package the application code, libraries, and dependencies.
-- Docker, along with other container runtime like containerd or cri-o, is used to manage containers.
 - Containers are highly efficient in terms of resource utilization and startup time.
 - Isolation between containers is achieved through namespaces and control groups (cgroups).
 
@@ -133,7 +121,7 @@ docker images
 ## Docker containers
 Container is a running instance of an image.
 
-### Run a docker image as container
+### Run a docker image as container (or image running as a process)
 
 ```bash
 docker run -d --name <container_name> <image_name>:<tag>
@@ -169,7 +157,7 @@ docker container rm -f <name_of_the_container/id_of_the_container>
 ```
 
 
-## Networking
+# Docker Networking
 
 **Bridge Networking**
 Bridge networking, also known as the default Docker network, creates an internal bridge network on the host.
@@ -199,10 +187,36 @@ docker run -d --network=host --name=my_container my_image
 **Overlay Networking**
 Overlay networking facilitates communication between containers running on different Docker hosts or Swarm nodes.
 
-## Volume mounts
-By default, the data in a container is stored in an ephemeral, writable container layer. Removing the container also removes its data
 
-## Docker compose file
+# Docker volumes
+Docker volumes are a feature of Docker that provide a way to persistently store and manage data in containers. By default, the data in a container is stored in an ephemeral, writable container layer. Removing the container also removes it's data.
+
+### Types of volumes
+- Named Volumes: These are managed volumes created and managed by Docker. They are stored in a location controlled by Docker and are independent of the container's lifecycle.
+
+- Host-mounted Volumes: These volumes are directories on the Docker host that are mounted directly into the container. Changes made in the container are reflected on the host and vice versa.
+
+- Anonymous Volumes: These are temporary volumes created by Docker when no explicit volume is specified. They are useful for storing temporary or non-persistent data.
+
+### Manage volumes
+
+```bash
+docker volume create my_volume
+```
+
+```bash
+docker volume ls
+```
+
+```bash
+docker volume inspect my_volume
+```
+
+```bash
+docker volume rm my_volume
+```
+
+# Docker compose file
 
 ```yml
 version: '3'
@@ -219,19 +233,61 @@ services:
       - 8000:80
     depends_on:
       - db
+    networks:
+      - fast_api
 
   db:
     build:
       context: .
       dockerfile: Dockerfile.pgsql
+    volumes:
+      - psql_volume:/var/lib/postgresql/data
+    networks:
+      - fast_api
 
   pgadmin:
     build:
       context: .
       dockerfile: Dockerfile.pgadmin
+    volumes:
+      - pgadmin_volume:/var/lib/pgadmin
     ports:
       - "5050:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@domain.com
       PGADMIN_DEFAULT_PASSWORD: admin
+    networks:
+      - fast_api
+
+volumes:
+  pgadmin_volume:
+  psql_volume:
+
+networks:
+  fast_api:
+```
+### Build image, up and run the container with a single command
+```bash
+docker-compose up
+```
+
+### Stop or down all the container manage py docker compose file
+```bash
+docker-compose down
+```
+
+### Managing development and production containers
+
+```bash
+docker-compose -f docker-compose.dev.yml up
+```
+
+```bash
+docker-compose -f docker-compose.prod.yml down
+```
+
+### Run command in the container
+
+```bash
+docker-compose exec -it <service-name> <bash/shell>
 ```
