@@ -79,6 +79,7 @@ Docker images are built using the Dockerfile, which consists of a set of instruc
 ```bash
 docker pull <image_name>:<tag>
 ```
+
 #### Dockerfile
 ```Dockerfile
 # Start with a base image
@@ -104,6 +105,28 @@ WORKDIR <directory>
 
 # Specify a default command to run when the container starts
 CMD ["executable", "parameter1", "parameter2"]
+```
+
+#### A basic nginx server from alpine base image
+
+```Dockerfile
+# Use Alpine Linux as the base image
+FROM alpine:latest
+
+# Install Nginx and other dependencies
+RUN apk update && \
+    apk add --no-cache nginx && \
+    mkdir -p /run/nginx
+
+# Copy Nginx configuration files
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
 ```
 
 !['image file'](image.png)
