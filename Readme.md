@@ -194,7 +194,7 @@ docker run -d --network=my_bridge_network --name=my_container1 my_image1
 ```
 
 ```bash
-docker run -d --network=my_bridge_network --name=my_container2 my_image1
+docker run -d --network=my_bridge_network --name=my_container2 my_image2
 ```
 
 ```bash

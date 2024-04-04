@@ -11,10 +11,11 @@ cat /usr/share/nginx/html/index.html
 
 docker build -t test_pgadmin -f Dockerfile.pgadmin .
 docker build -t test_pgsql -f Dockerfile.pgsql .
-docker run -p 5050:80 --name pgadmin_container test_pgadmin
 docker run -d --name pgsql_container test_pgsql
+docker run -p 5050:80 --name pgadmin_container test_pgadmin
 docker container inspect pgadmin_container
 docker container inspect pgsql_container
+docker exec -it pgadmin_container ping 172.17.0.2(replace with pgsql_container ip address)
 
 
 docker network create my_bridge_network
