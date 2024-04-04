@@ -1,3 +1,6 @@
+docker pull nginx:latest
+docker run -p 80:80 --name nginx_container nginx
+
 docker build -t test_nginx .
 docker run -p 80:80 --name nginx_container test_nginx
 docker container inspect nginx_container
@@ -23,4 +26,16 @@ docker container inspect pgsql_container
 docker exec -it pgadmin_container ping pgsql_container
 
 
-docker run --network=host --name pgadmin_container test_pgadmin
+docker run --rm -d --name nginx_container --network host test_nginx
+
+
+docker volume create test_volume1
+docker volume create test_volume2                            
+docker volume inspect test_volume1                                                                           
+docker volume inspect test_volume2
+docker run -p 5050:80 -v test_volume1:/var/lib/pgadmin --name pgadmin_container test_pgadmin
+docker run --name nginx_container -p 80:80 --mount type=volume,src=test_volume2,target=/usr/share/nginx/html -d test_nginx
+docker run --name nginx_container -p 80:80 --mount type=bind,src=/Users/rubeluddin/practise/docker/my_content,target=/usr/share/nginx/html -d test_nginx
+
+docker composer up
+docker composer up --build

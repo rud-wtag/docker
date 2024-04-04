@@ -46,7 +46,7 @@
 !['image file'](arch.webp)
 
 Let's talk about some core concept of virtualization and containerization: 
-well all know about the **virtual machine** which is the virtualization or emulation of a computer system. Some characteristics of a virtual machines are:- 
+well all know about the **virtual machines** which are the virtualization or emulation of a computer system. Some characteristics of a virtual machines are:- 
 
 - VMs emulate a physical computer and run an entire operating system (OS) stack.
 - Each VM includes its own kernel, libraries, applications, and binaries.
@@ -109,7 +109,7 @@ CMD ["executable", "parameter1", "parameter2"]
 !['image file'](image.png)
 
 ```bash
-docker build -t your_image_name:tag -f path/to/Dockerfile .
+docker build -t image-name:tag -f path/to/Dockerfile .
 ```
 
 ### Find all docker images
@@ -131,7 +131,7 @@ docker run -d --name <container_name> <image_name>:<tag>
 docker run -d -p host_machine_port:docker_container_port test_nginx
 ```
 
-### Now, How can we found our webpage running inside docker nginx server?
+### Now, How can we find our webpage running inside docker nginx server?
 
 http://localhost:port/
 
@@ -198,7 +198,7 @@ Docker volumes are a feature of Docker that provide a way to persistently store 
 
 - Anonymous Volumes: These are temporary volumes created by Docker when no explicit volume is specified. They are useful for storing temporary or non-persistent data.
 
-### Manage volumes
+### Manage docker volumes
 
 ```bash
 docker volume create my_volume
@@ -216,7 +216,23 @@ docker volume inspect my_volume
 docker volume rm my_volume
 ```
 
-# Docker compose file
+### Run docker container by mounting docker volume
+
+```bash
+docker run -v my_volume:/path/in/container my_image
+```
+
+### Run docker container by mounting docker volume in verbose way
+
+```bash
+docker run --name <container-name> -p 80:80 --mount type=volume,src=<volume-name>,target=<target-path-in-the-container> -d test_nginx
+```
+
+```bash
+docker run --name nginx_container -p 80:80 --mount type=bind,src=<absolute-path-in-host>,target=<target-path-in-the-container> -d test_nginx
+```
+
+# Docker compose
 
 ```yml
 version: '3'
@@ -271,7 +287,7 @@ networks:
 docker-compose up
 ```
 
-### Stop or down all the container manage py docker compose file
+### Stop or down all the container with docker compose
 ```bash
 docker-compose down
 ```
