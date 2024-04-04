@@ -63,7 +63,7 @@ Some characteristics of a containers are:-
 - Containers are highly efficient in terms of resource utilization and startup time.
 - Isolation between containers is achieved through namespaces and control groups (cgroups).
 
-SO, Docker manages the containers and it has some core feature like:
+SO, Docker manages the containers and it has some core features like:
 - Image
 - Container
 - Network
